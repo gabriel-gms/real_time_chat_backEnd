@@ -8,11 +8,12 @@ const app = express()
 app.use(cors({ origin: "http://localhost:3001" }))
 const server = http.createServer(app)
 const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3001",
-    methods: ["GET", "POST"],
-    credentials: true
-  }
+    transports: ['websocket', 'polling'],
+    cors: {
+        origin: "http://localhost:3001",
+        methods: ["GET", "POST"],
+        credentials: true
+    }
 })
 
 server.listen(3000)
@@ -25,7 +26,8 @@ io.on('connection', (socket)=>{
     socket.on('entrada', (username)=>{
         socket.data.username = username
         usuariosConectados.push(username)
-        console.log("Entrou alguem "+usuariosConectados)
+        console.log("Entrou alguem:")
+        console.log(usuariosConectados)
 
         socket.emit('lista', usuariosConectados)
         socket.broadcast.emit('lista-broadcast', {
@@ -36,11 +38,22 @@ io.on('connection', (socket)=>{
 
     socket.on('disconnect', ()=>{
         usuariosConectados = usuariosConectados.filter(item => item != socket.data.username )
-        console.log("Saiu alguem "+usuariosConectados)
+        console.log("Saiu alguem:")
+        console.log(usuariosConectados)
 
         socket.broadcast.emit('lista-broadcast', {
             left: socket.data.username,
             list: usuariosConectados
         })
+    })
+
+    socket.on('msg', (msgData)=> {
+        let data = {
+            username: socket.data.username,
+            msg: msgData
+        }
+
+        socket.emit('msg', data)
+        socket.broadcast.emit('msg', data)
     })
 })
