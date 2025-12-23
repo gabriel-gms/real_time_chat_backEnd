@@ -48,12 +48,8 @@ io.on('connection', (socket)=>{
     })
 
     socket.on('msg', (msgData)=> {
-        let data = {
-            username: socket.data.username,
-            msg: msgData
-        }
 
-        socket.emit('msg', data)
-        socket.broadcast.emit('msg', data)
+        socket.emit('msg', msgData)
+        socket.broadcast.emit('msg', msgData)
     })
 })
