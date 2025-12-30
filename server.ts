@@ -4,6 +4,7 @@ import http from 'http'
 import {Server} from 'socket.io'
 import cors from 'cors'
 
+const port = process.env.PORT || 3000
 const app = express()
 app.use(cors({ origin: "http://localhost:3001" }))
 const server = http.createServer(app)
@@ -16,7 +17,7 @@ const io = new Server(server, {
     }
 })
 
-server.listen(3000)
+server.listen(port)
 
 app.use(express.static(path.join('/')))
 
